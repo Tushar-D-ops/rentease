@@ -27,18 +27,27 @@ export default function OnboardingPage() {
       })
 
       const data = await res.json()
+      
+      // 'Already onboarded' means user exists in DB — just redirect them
+      if (data.message === 'Already onboarded') {
+        // Fetch their actual role from DB and redirect
+        const roleRes = await fetch('/api/users/me')
+        const roleData = await roleRes.json()
+        const role = roleData?.role
+        if (role) {
+          window.location.href = `/${role}`
+          return
+        }
+      }
+
       if (!res.ok) throw new Error(data.error || 'Onboarding failed')
 
-      // CRITICAL: reload the Clerk user so the session JWT gets the new
-      // publicMetadata.role — without this the middleware still sees no role
-      // and redirects back to /onboarding on every login
-      await user.reload()
-
       toast.success('Welcome to RentEase! 🎉')
-      router.push(`/${selectedRole}`)
+      // Use window.location for a full page reload so middleware
+      // picks up the newly inserted DB row on the next request
+      window.location.href = `/${selectedRole}`
     } catch (err) {
       toast.error(err.message || 'Something went wrong. Please try again.')
-    } finally {
       setLoading(false)
     }
   }

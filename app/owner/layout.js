@@ -1,5 +1,8 @@
 import Sidebar from '@/components/shared/Sidebar'
-export default function OwnerLayout({ children }) {
+import { requireRole } from '@/app/layout-guard'
+
+export default async function OwnerLayout({ children }) {
+  await requireRole('owner')
   return (
     <div className="flex h-screen bg-[#050810] overflow-hidden">
       <Sidebar role="owner" />
