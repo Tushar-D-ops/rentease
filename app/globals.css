@@ -1,5 +1,7 @@
-@import "tailwindcss";
-
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -24,3 +26,74 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0b0f1e; }
+::-webkit-scrollbar-thumb { background: #1a2035; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4f6ef7; }
+
+.gradient-text {
+  background: linear-gradient(135deg, #4f6ef7, #a78bfa, #06d6a0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: rgba(17,21,39,0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.mesh-bg {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(79,110,247,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(124,58,237,0.12) 0%, transparent 50%),
+    #050810;
+}
+
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(79,110,247,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,110,247,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.leaflet-container { background: #111527 !important; }
+.leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(0.9); }
+
+.shimmer {
+  background: linear-gradient(90deg, #111527 25%, #1a2035 50%, #111527 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #4f6ef7 !important;
+  box-shadow: 0 0 0 3px rgba(79,110,247,0.15);
+}
+
+.data-table th {
+  background: #0b0f1e;
+  color: #7b82a8;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  padding: 12px 16px;
+  text-align: left;
+}
+.data-table td { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.data-table tr:hover td { background: rgba(79,110,247,0.04); }
+
+.badge-success { background: rgba(6,214,160,0.15);   color: #06d6a0; }
+.badge-warning { background: rgba(245,166,35,0.15);  color: #f5a623; }
+.badge-danger  { background: rgba(255,77,109,0.15);  color: #ff4d6d; }
+.badge-info    { background: rgba(79,110,247,0.15);  color: #818cf8; }
+.badge-muted   { background: rgba(123,130,168,0.15); color: #7b82a8; }
