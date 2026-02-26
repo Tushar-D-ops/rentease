@@ -130,14 +130,17 @@ export async function GET(req) {
 
     const status = new URL(req.url).searchParams.get('status') || 'pending'
 
-    const { data } = await supabase
-      .from('enrollments')
-      .select('*,users(full_name,email,phone),properties(name,city),rooms(room_number,room_type)')
-      .in('property_id', propIds)
-      .eq('status', status)
-      .order('requested_at', { ascending: false })
+    const { data, error: enrollErr } = await supabase
+  .from('enrollments')
+  .select('*,users!student_id(full_name,email,phone),properties(name,city),rooms(room_number,room_type)')
+  .in('property_id', propIds)
+  .eq('status', status)
+  .order('requested_at', { ascending: false })
 
-    return NextResponse.json(data || [])
+if (enrollErr) console.error('[GET /api/enrollments owner]', enrollErr)
+return NextResponse.json(data || [])
+
+
   }
 
   return NextResponse.json({ error: 'Forbidden' }, { status: 403 })

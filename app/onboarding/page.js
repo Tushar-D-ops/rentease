@@ -1,16 +1,33 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
 export default function OnboardingPage() {
-  const { user } = useUser()
-  const router = useRouter()
+  const { user, isLoaded } = useUser()
   const [selectedRole, setSelectedRole] = useState(null)
   const [college, setCollege] = useState('')
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
+  const [checking, setChecking] = useState(true)
+
+  // On mount: check if user already has a role in DB → redirect immediately
+  useEffect(() => {
+    if (!isLoaded) return
+    if (!user) { setChecking(false); return }
+
+    fetch('/api/users/me')
+      .then(r => r.json())
+      .then(data => {
+        if (data?.role) {
+          // Already onboarded — send straight to their dashboard
+          window.location.href = `/${data.role}`
+        } else {
+          setChecking(false)
+        }
+      })
+      .catch(() => setChecking(false))
+  }, [isLoaded, user])
 
   async function handleSubmit() {
     if (!selectedRole) return toast.error('Please select your role')
@@ -27,29 +44,24 @@ export default function OnboardingPage() {
       })
 
       const data = await res.json()
-      
-      // 'Already onboarded' means user exists in DB — just redirect them
-      if (data.message === 'Already onboarded') {
-        // Fetch their actual role from DB and redirect
-        const roleRes = await fetch('/api/users/me')
-        const roleData = await roleRes.json()
-        const role = roleData?.role
-        if (role) {
-          window.location.href = `/${role}`
-          return
-        }
-      }
 
       if (!res.ok) throw new Error(data.error || 'Onboarding failed')
 
       toast.success('Welcome to RentEase! 🎉')
-      // Use window.location for a full page reload so middleware
-      // picks up the newly inserted DB row on the next request
       window.location.href = `/${selectedRole}`
     } catch (err) {
       toast.error(err.message || 'Something went wrong. Please try again.')
       setLoading(false)
     }
+  }
+
+  // Show spinner while checking existing role
+  if (checking) {
+    return (
+      <div className="min-h-screen mesh-bg flex items-center justify-center">
+        <div className="text-white text-lg animate-pulse">Loading...</div>
+      </div>
+    )
   }
 
   return (
