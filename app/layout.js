@@ -1,6 +1,7 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from 'react-hot-toast'
 import './globals.css'
+import { dark } from '@clerk/themes';
 
 export const metadata = {
   title: 'RentEase – Smart Student Accommodation',
@@ -9,7 +10,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={{ baseTheme: dark }}>
       <html lang="en">
         <head>
           <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />

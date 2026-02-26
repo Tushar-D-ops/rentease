@@ -29,6 +29,7 @@ export default function OwnerPropertiesPage() {
   useEffect(() => { if (user) fetchProperties() }, [user])
 
   async function fetchProperties() {
+    console.log(user)
     const { data: owner } = await supabase.from('users').select('id').eq('clerk_id', user.id).single()
     if (!owner) { setLoading(false); return }
     const { data } = await supabase
@@ -49,7 +50,7 @@ export default function OwnerPropertiesPage() {
       const res = await fetch('/api/properties', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, base_price: parseFloat(form.base_price) * 100 }),
+        body: JSON.stringify({ ...form, base_price: parseFloat(form.base_price) }),
       })
       if (!res.ok) throw new Error((await res.json()).error || 'Failed')
       toast.success('Property submitted for approval!')
