@@ -19,6 +19,7 @@ export default function OwnerEnrollmentsPage() {
     setLoading(true)
     const res = await fetch(`/api/enrollments?status=${tab}`)
     const data = await res.json()
+    console.log(data)
     setEnrollments(Array.isArray(data) ? data : [])
     setLoading(false)
   }

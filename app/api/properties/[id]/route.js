@@ -10,15 +10,24 @@ export async function GET(req, { params }) {
   if (cached) return NextResponse.json(cached)
 
   const supabase = getSupabaseAdmin()
+
+  // Use users!owner_id to disambiguate the FK join (properties.owner_id -> users.id)
   const { data: property, error } = await supabase
     .from('properties')
-    .select('*,rooms(*),users(full_name)')
+    .select('*, rooms(id, room_number, room_type, floor_number, status, capacity, occupied), users!owner_id(full_name)')
     .eq('id', id)
     .single()
 
-  if (error || !property) return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+  if (error) {
+    console.error('[GET /api/properties/[id]]', error.message)
+    return NextResponse.json({ error: error.message }, { status: 404 })
+  }
 
-  await cacheSet(cacheKey, property, 120) // cache 2 min
+  if (!property) {
+    return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+  }
+
+  await cacheSet(cacheKey, property, 120)
 
   return NextResponse.json(property)
 }

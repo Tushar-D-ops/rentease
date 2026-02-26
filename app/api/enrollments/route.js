@@ -13,9 +13,12 @@ export async function POST(req) {
 
   const supabase = getSupabaseAdmin()
 
-  // Check role from cache first
   let role = await getCachedUserRole(userId)
-  const { data: student } = await supabase.from('users').select('id,role,full_name,email').eq('clerk_id', userId).single()
+  const { data: student } = await supabase
+    .from('users')
+    .select('id,role,full_name,email')
+    .eq('clerk_id', userId)
+    .maybeSingle()           // ← maybeSingle: won't crash if missing
   if (!student) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
   if (!role) {
@@ -28,13 +31,14 @@ export async function POST(req) {
   const { propertyId, roomId, message } = await req.json()
   if (!propertyId || !roomId) return NextResponse.json({ error: 'propertyId and roomId are required' }, { status: 400 })
 
-  // Check student doesn't already have an active enrollment
+  // Check student doesn't already have an active/pending enrollment
+  // maybeSingle: returns null safely when no row found (single() throws 406)
   const { data: existing } = await supabase
     .from('enrollments')
     .select('id,status')
     .eq('student_id', student.id)
     .in('status', ['active', 'pending', 'approved'])
-    .single()
+    .maybeSingle()
 
   if (existing) {
     const msg = existing.status === 'active'
@@ -49,20 +53,19 @@ export async function POST(req) {
     .select('id,status,room_number,property_id')
     .eq('id', roomId)
     .eq('property_id', propertyId)
-    .single()
+    .maybeSingle()
 
   if (!room) return NextResponse.json({ error: 'Room not found' }, { status: 404 })
   if (room.status !== 'available') return NextResponse.json({ error: 'Room is no longer available' }, { status: 400 })
 
-  // Get property + owner info
+  // Get property — use users!owner_id to disambiguate FK join
   const { data: property } = await supabase
     .from('properties')
-    .select('id,name,current_price,owner_id,users(full_name,email)')
+    .select('id,name,current_price,owner_id,users!owner_id(full_name,email)')
     .eq('id', propertyId)
-    .eq('status', 'approved')
-    .single()
+    .maybeSingle()
 
-  if (!property) return NextResponse.json({ error: 'Property not found or not approved' }, { status: 404 })
+  if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 })
 
   // Create enrollment in 'pending' state
   const { data: enrollment, error } = await supabase
@@ -79,15 +82,16 @@ export async function POST(req) {
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    console.error('[POST /api/enrollments]', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 
-  // Invalidate property cache so room count stays fresh
   await cacheDel(`property:${propertyId}`)
-
   return NextResponse.json(enrollment, { status: 201 })
 }
 
-// GET /api/enrollments — Owner gets pending requests for their properties
+// GET /api/enrollments — Student or Owner fetches enrollments
 export async function GET(req) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -95,7 +99,11 @@ export async function GET(req) {
   const supabase = getSupabaseAdmin()
 
   let role = await getCachedUserRole(userId)
-  const { data: user } = await supabase.from('users').select('id,role').eq('clerk_id', userId).single()
+  const { data: user } = await supabase
+    .from('users')
+    .select('id,role')
+    .eq('clerk_id', userId)
+    .maybeSingle()
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
   if (!role) {
@@ -104,27 +112,27 @@ export async function GET(req) {
   }
 
   if (role === 'student') {
-    // Student: get their own enrollment requests
     const { data } = await supabase
       .from('enrollments')
-      .select('*,properties(name,city,images),rooms(room_number,type)')
+      .select('*,properties(name,city,images),rooms(room_number,room_type)')
       .eq('student_id', user.id)
       .order('requested_at', { ascending: false })
     return NextResponse.json(data || [])
   }
 
   if (role === 'owner') {
-    // Owner: get pending enrollment requests for their properties
-    const { data: properties } = await supabase.from('properties').select('id').eq('owner_id', user.id)
+    const { data: properties } = await supabase
+      .from('properties')
+      .select('id')
+      .eq('owner_id', user.id)
     const propIds = properties?.map(p => p.id) || []
     if (!propIds.length) return NextResponse.json([])
 
-    const { url } = new URL(req.url)
     const status = new URL(req.url).searchParams.get('status') || 'pending'
 
     const { data } = await supabase
       .from('enrollments')
-      .select('*,users(full_name,email,phone),properties(name,city),rooms(room_number,type)')
+      .select('*,users(full_name,email,phone),properties(name,city),rooms(room_number,room_type)')
       .in('property_id', propIds)
       .eq('status', status)
       .order('requested_at', { ascending: false })
