@@ -12,48 +12,36 @@ export default function OnboardingPage() {
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
 
-//   async function handleSubmit() {
-//     if (!selectedRole) return toast.error('Please select your role')
-//     if (selectedRole === 'student' && !college) return toast.error('Please enter your college name')
-//     setLoading(true)
-//     try {
-//       const res = await fetch('/api/users/onboard', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ role: selectedRole, college, phone }),
-//       })
-//       if (!res.ok) throw new Error('Onboarding failed')
-//       await user.update({ publicMetadata: { role: selectedRole } })
-//       toast.success('Welcome to RentEase! 🎉')
-//       router.push(`/${selectedRole}`)
-//     } catch { toast.error('Something went wrong. Please try again.') }
-//     finally { setLoading(false) }
-//   }
-
   async function handleSubmit() {
-  if (!selectedRole) return toast.error('Please select your role')
-  if (selectedRole === 'student' && !college)
-    return toast.error('Please enter your college name')
+    if (!selectedRole) return toast.error('Please select your role')
+    if (selectedRole === 'student' && !college)
+      return toast.error('Please enter your college name')
 
-  setLoading(true)
+    setLoading(true)
 
-  try {
-    const res = await fetch('/api/users/onboard', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role: selectedRole, college, phone }),
-    })
+    try {
+      const res = await fetch('/api/users/onboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: selectedRole, college, phone }),
+      })
 
-    if (!res.ok) throw new Error('Onboarding failed')
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Onboarding failed')
 
-    toast.success('Welcome to RentEase! 🎉')
-    router.push(`/${selectedRole}`)
-  } catch {
-    toast.error('Something went wrong. Please try again.')
-  } finally {
-    setLoading(false)
+      // CRITICAL: reload the Clerk user so the session JWT gets the new
+      // publicMetadata.role — without this the middleware still sees no role
+      // and redirects back to /onboarding on every login
+      await user.reload()
+
+      toast.success('Welcome to RentEase! 🎉')
+      router.push(`/${selectedRole}`)
+    } catch (err) {
+      toast.error(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
   return (
     <div className="min-h-screen mesh-bg flex items-center justify-center p-6">
