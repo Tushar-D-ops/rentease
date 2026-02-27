@@ -65,8 +65,9 @@ export default function LandingPage() {
       <Navbar/>
 
       {/* ─── HERO ─── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 overflow-hidden">
-        <Blob color="#4f6ef7" style={{ width:600, height:600, top:'-100px', left:'-200px', animationDelay:'0s' }} />
+      
+<section className="relative min-h-[100vh] flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-24 sm:pt-28 overflow-hidden">       
+   <Blob color="#4f6ef7" style={{ width:600, height:600, top:'-100px', left:'-200px', animationDelay:'0s' }} />
         <Blob color="#7c3aed" style={{ width:500, height:500, bottom:'-100px', right:'-150px', animationDelay:'-4s' }} />
         <Blob color="#06d6a0" style={{ width:400, height:400, top:'30%', right:'10%', animationDelay:'-8s' }} />
         <div className="absolute inset-0 grid-overlay opacity-60 pointer-events-none" />
@@ -106,7 +107,7 @@ export default function LandingPage() {
                 <div className="w-3 h-3 rounded-full bg-[#06d6a0]" />
                 <div className="flex-1 mx-4 bg-white/5 rounded-lg px-3 py-1 text-xs text-[#7b82a8]">rentease.in/student</div>
               </div>
-              <div className="p-6 grid grid-cols-4 gap-4">
+              <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                   { label:'Due This Month', value:'₹8,500', sub:'Due in 3 days', color:'#f5a623' },
                   { label:'Current Status', value:'Inside', sub:'Logged in 2h ago', color:'#06d6a0' },
@@ -120,7 +121,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <div className="px-6 pb-6 grid grid-cols-2 gap-4">
+              <div className="px-4 sm:px-6 pb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-[#0b0f1e] rounded-xl p-4 border border-white/5">
                   <div className="text-sm font-semibold text-white mb-3">Next Payment</div>
                   <div className="space-y-2">
@@ -162,7 +163,7 @@ export default function LandingPage() {
               { step:'02', icon:'🏠', title:'Enroll Instantly', desc:'Pick a room, submit enrollment. Owner approves, QR code generates, your dashboard activates.' },
               { step:'03', icon:'✅', title:'Live Stress-Free', desc:'Pay rent in one click every month. Scan QR at the gate. Chat with AI for any help. Done.' },
             ].map(({ step, icon, title, desc }) => (
-              <div key={step} className="relative bg-[#111527] border border-white/5 rounded-2xl p-8 text-left hover:border-brand-500/30 transition-all">
+              <div key={step} className="glass relative bg-[#111527] border border-white/5 rounded-2xl p-8 text-left hover:border-brand-500/30 transition-all">
                 <div className="text-[4rem] font-syne font-extrabold text-white/5 absolute top-4 right-6 select-none">{step}</div>
                 <div className="text-4xl mb-4">{icon}</div>
                 <h3 className="font-syne font-bold text-xl text-white mb-2">{title}</h3>
@@ -182,7 +183,7 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map(({ icon, title, desc }) => (
-              <div key={title} className="bg-[#111527] border border-white/5 rounded-2xl p-6 hover:border-brand-500/30 hover:shadow-[0_8px_30px_rgba(79,110,247,0.08)] transition-all group">
+              <div key={title} className="glass bg-[#111527] border border-white/10 rounded-2xl p-6 hover:border-brand-400/30 hover:shadow-[0_8px_30px_rgba(79,110,247,0.08)] transition-all group">
                 <div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center text-2xl mb-4 group-hover:bg-brand-500/20 transition-colors">{icon}</div>
                 <h3 className="font-syne font-bold text-white mb-2">{title}</h3>
                 <p className="text-[#7b82a8] text-sm leading-relaxed">{desc}</p>
@@ -205,8 +206,8 @@ export default function LandingPage() {
           </div>
           <div className="space-y-4">
             {BILLING_STEPS.map((step, i) => (
-              <div key={step.title} className={`flex items-center gap-6 ${i%2!==0?'md:flex-row-reverse':''}`}>
-                <div className="flex-1 bg-[#111527] border border-white/5 rounded-2xl p-5 hover:border-brand-500/30 transition-all">
+              <div className={`flex flex-col md:flex-row items-start md:items-center gap-6 ${i%2!==0?'md:flex-row-reverse':''}`}>
+                <div className=" glass flex-1 bg-[#111527] border border-white/5 rounded-2xl p-5 hover:border-brand-500/30 transition-all">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-xl">{step.icon}</span>
                     <span className="text-brand-500 text-xs font-bold uppercase tracking-widest">Day {step.label}</span>
@@ -226,7 +227,7 @@ export default function LandingPage() {
 
       {/* ─── QR SYSTEM ─── */}
       <section id="qr" className="py-24 px-[5%]">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div>
             <div className="text-brand-500 text-xs font-bold uppercase tracking-[3px] mb-4">Smart Entry System</div>
             <h2 className="font-syne font-extrabold text-[clamp(2rem,4vw,3rem)] mb-4">Scan. Log. Done.</h2>
@@ -280,9 +281,9 @@ export default function LandingPage() {
             <h2 className="font-syne font-extrabold text-[clamp(2rem,4vw,3rem)] mb-4">100% Free. Production grade.</h2>
             <p className="text-[#7b82a8] text-lg max-w-xl mx-auto">Every service has a generous free tier. Run the entire platform at zero cost up to ~10,000 users.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {TECH_STACK.map(({ name, role, color, icon }) => (
-              <div key={name} className="bg-[#111527] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all">
+              <div key={name} className="glass bg-[#111527] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all">
                 <div className="text-2xl mb-3">{icon}</div>
                 <div className="font-syne font-bold text-white mb-1">{name}</div>
                 <div className="text-[#7b82a8] text-xs leading-relaxed mb-3">{role}</div>
@@ -310,7 +311,7 @@ export default function LandingPage() {
           <p className="text-[#7b82a8] text-lg mb-10 max-w-xl mx-auto">
             Join thousands of students and property owners on RentEase. Free forever. No credit card required.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/sign-up?role=student" className="bg-gradient-to-r from-brand-500 to-accent-purple text-white font-bold text-lg px-8 py-4 rounded-2xl hover:opacity-90 transition-opacity shadow-[0_8px_30px_rgba(79,110,247,0.4)]">
               🎓 I'm a Student →
             </Link>
@@ -324,7 +325,7 @@ export default function LandingPage() {
 
       {/* ─── FOOTER ─── */}
       <footer className="border-t border-white/5 py-10 px-[5%]">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="flex items-center gap-2 font-syne font-extrabold text-lg">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-accent-purple flex items-center justify-center text-sm">🏠</div>
             Rent<span className="text-brand-500">Ease</span>

@@ -97,3 +97,28 @@ input:focus, textarea:focus, select:focus {
 .badge-danger  { background: rgba(255,77,109,0.15);  color: #ff4d6d; }
 .badge-info    { background: rgba(79,110,247,0.15);  color: #818cf8; }
 .badge-muted   { background: rgba(123,130,168,0.15); color: #7b82a8; }
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.glass-card {
+  background: rgba(17, 21, 39, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.glass-soft {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.sidebar-glass {
+  background: rgba(11, 15, 30, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}

@@ -40,7 +40,7 @@ export default function CounterLandingPage(){
             { target:99,    suffix:'%', label:'Payment Success Rate' },
             { target:4,     suffix:' sec', label:'Avg QR Scan Time' },
           ].map(({ target, suffix, label }) => (
-            <div key={label}>
+            <div key={label} className=''>
               <div className="font-syne font-extrabold text-[clamp(1.8rem,4vw,2.8rem)] gradient-text">
                 <Counter target={target} suffix={suffix} />
               </div>

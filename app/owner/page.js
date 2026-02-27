@@ -42,12 +42,12 @@ export default function OwnerDashboard() {
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="font-syne font-bold text-3xl text-white mb-1">Owner Dashboard</h1>
         <p className="text-[#7b82a8]">Real-time analytics for your properties</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
         <StatCard icon="💰" label="Total Revenue" value={formatCurrency(d.totalRevenue)} sub="All time" color="#06d6a0" loading={loading} />
         <StatCard icon="👥" label="Active Students" value={d.activeStudents||0} sub="Enrolled tenants" color="#4f6ef7" loading={loading} />
         <StatCard icon="🏢" label="Occupancy Rate" value={`${d.occupancyRate||0}%`} sub={`${d.filledRooms||0}/${d.totalRooms||0} rooms`} color="#7c3aed" loading={loading} />
@@ -55,10 +55,10 @@ export default function OwnerDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className="lg:col-span-2 bg-[#111527] border border-white/5 rounded-2xl p-6">
+        <div className="lg:col-span-2 glass-card rounded-2xl p-4 sm:p-6">
           <h2 className="font-syne font-bold text-lg mb-6">Monthly Revenue</h2>
           {d.chartData?.length > 0 ? (
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={d.chartData}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -78,11 +78,11 @@ export default function OwnerDashboard() {
           )}
         </div>
 
-        <div className="bg-[#111527] border border-white/5 rounded-2xl p-6">
+        <div className="glass-card rounded-2xl p-4 sm:p-6">
           <h2 className="font-syne font-bold text-lg mb-6">Room Occupancy</h2>
           {d.pieData && (
             <>
-              <ResponsiveContainer width="100%" height={160}>
+              <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
                   <Pie data={d.pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value">
                     {d.pieData.map((entry,i) => <Cell key={i} fill={entry.color} />)}
@@ -105,7 +105,7 @@ export default function OwnerDashboard() {
           <Link href="/owner/billing" className="text-brand-400 text-sm hover:text-brand-300">View all →</Link>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full data-table">
+          <table className="w-full text-sm min-w-[650px]">
             <thead><tr>
               <th>Student</th><th>Month</th><th>Amount</th><th>Status</th><th>Due Date</th>
             </tr></thead>

@@ -46,7 +46,7 @@ export default function Roles(){
           <div className="bg-[#111527] border border-white/5 rounded-2xl p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {(activeRole === 'student' ? STUDENT_FEATURES : OWNER_FEATURES).map((feat) => (
-                <div key={feat} className="flex items-center gap-3 text-sm text-[#c9d1d9]">
+                <div key={feat} className=" flex items-center gap-3 text-sm text-[#c9d1d9]">
                   <div className="w-5 h-5 rounded-full bg-brand-500/20 flex items-center justify-center flex-shrink-0">
                     <div className="w-2 h-2 rounded-full bg-brand-500" />
                   </div>
