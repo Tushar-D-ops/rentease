@@ -5,59 +5,84 @@ import { apiRateLimit, cacheGet, cacheSet } from '@/lib/redis/client'
 import { rankProperties } from '@/lib/recommendations/scorer'
 import { getAllTravelModes } from '@/lib/maps/distance'
 
-// GET /api/properties?city=Pune&maxBudget=10000&maxDistance=3&gender=male
+// Haversine formula — straight-line km between two coords
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLng = (lng2 - lng1) * Math.PI / 180
+  const a = Math.sin(dLat/2)**2 +
+    Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * Math.sin(dLng/2)**2
+  return parseFloat((R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(2))
+}
+
+// GET /api/properties
 export async function GET(req) {
   const { searchParams } = new URL(req.url)
-  const city = searchParams.get('city')
-  const maxBudget = searchParams.get('maxBudget')
-  const maxDistance = searchParams.get('maxDistance')
-  const gender = searchParams.get('gender')
-  const collegeLat = searchParams.get('collegeLat')
-  const collegeLng = searchParams.get('collegeLng')
+  const maxBudget    = searchParams.get('maxBudget')
+  const maxDistance  = searchParams.get('maxDistance')
+  const gender       = searchParams.get('gender')
+  const collegeLat   = searchParams.get('collegeLat')
+  const collegeLng   = searchParams.get('collegeLng')
 
-  // Cache key
-  const cacheKey = `properties:${city}:${maxBudget}:${maxDistance}:${gender}`
-  const cached = await cacheGet(cacheKey)
-  if (cached && !collegeLat) return NextResponse.json(cached)
+  // ✅ If student has college coords, use proximity-based fetch (no city filter needed)
+  // If not, fall back to city filter for backwards compat
+  const city = (!collegeLat || !collegeLng) ? searchParams.get('city') : null
 
   const supabase = getSupabaseAdmin()
 
   let query = supabase
     .from('properties')
     .select(`
-      id, name, address, city, lat, lng, distance_km,
+      id, name, address, city, lat, lng,
       travel_time_walk, travel_time_transit, base_price, current_price,
       gender_restriction, amenities, images, avg_rating, status,
       rooms (id, status, capacity, occupied)
     `)
     .eq('status', 'approved')
 
-  if (city) query = query.ilike('city', `%${city}%`)
-  if (maxBudget) query = query.lte('current_price', parseInt(maxBudget) * 100)
+  if (city)      query = query.ilike('city', `%${city}%`)
+  if (maxBudget) query = query.lte('current_price', parseInt(maxBudget))
   if (gender && gender !== 'any') {
     query = query.or(`gender_restriction.eq.any,gender_restriction.eq.${gender}`)
   }
 
   const { data: properties, error } = await query
-
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  // Rank with scoring
+  let filtered = properties || []
+
+  // ✅ Core fix: compute real-time distance from student's college to each property
+  // and hard-filter to only nearby ones (default 10km radius)
+  if (collegeLat && collegeLng) {
+    const cLat = parseFloat(collegeLat)
+    const cLng = parseFloat(collegeLng)
+    const radiusKm = maxDistance ? parseFloat(maxDistance) : 10 // default 10km radius
+
+    filtered = filtered
+      .map(p => ({
+        ...p,
+        // ✅ Overwrite distance_km with live-computed distance from THIS student's college
+        distance_km: (p.lat && p.lng) ? haversineKm(cLat, cLng, p.lat, p.lng) : null,
+      }))
+      .filter(p => {
+        // Drop properties with no coordinates
+        if (!p.lat || !p.lng) return false
+        // ✅ Hard filter: only show properties within radius of student's college
+        return p.distance_km !== null && p.distance_km <= radiusKm
+      })
+  }
+
   const prefs = {
-    maxBudget: maxBudget ? parseInt(maxBudget) * 100 : undefined,
-    maxDistance: maxDistance ? parseFloat(maxDistance) : undefined,
+    maxBudget:   maxBudget   ? parseInt(maxBudget)     : undefined,
+    maxDistance: maxDistance ? parseFloat(maxDistance) : 10,
     gender,
   }
 
-  const ranked = rankProperties(properties || [], prefs)
-
-  // Cache for 5 minutes (don't cache personalized results)
-  if (!collegeLat) await cacheSet(cacheKey, ranked, 300)
-
+  const ranked = rankProperties(filtered, prefs)
   return NextResponse.json(ranked)
 }
 
-// POST /api/properties — Owner creates property
+// POST /api/properties — Owner creates property (unchanged)
 export async function POST(req) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -67,7 +92,6 @@ export async function POST(req) {
 
   const supabase = getSupabaseAdmin()
 
-  // Verify owner role
   const { data: user } = await supabase
     .from('users')
     .select('id, role')
@@ -85,7 +109,6 @@ export async function POST(req) {
     dynamic_pricing_enabled, college_lat, college_lng,
   } = body
 
-  // Calculate distance from college using OSRM
   let distance_km = null
   let travel_time_walk = null
   let travel_time_transit = null

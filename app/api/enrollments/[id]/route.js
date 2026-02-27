@@ -4,16 +4,28 @@ import { getSupabaseAdmin } from '@/lib/supabase/server'
 import { getCachedUserRole, cacheUserRole, cacheDel } from '@/lib/redis/client'
 import { generateQRToken } from '@/lib/qr/generator'
 
-// PATCH /api/enrollments/[id] — Owner approves or rejects
-export async function PATCH(req, { params }) {
-  const { id } = params
+export async function PATCH(req, context) {
+  // ✅ Next.js 15: params must be awaited via context
+  const { id } = await context.params
+
+  console.log('[PATCH /api/enrollments] id:', id) // DEBUG — check server logs
+
+  if (!id) return NextResponse.json({ error: 'Missing enrollment ID' }, { status: 400 })
+
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const supabase = getSupabaseAdmin()
 
   let role = await getCachedUserRole(userId)
-  const { data: owner } = await supabase.from('users').select('id,role').eq('clerk_id', userId).single()
+  const { data: owner, error: ownerErr } = await supabase
+    .from('users')
+    .select('id, role')
+    .eq('clerk_id', userId)
+    .maybeSingle()
+
+  console.log('[PATCH /api/enrollments] owner:', owner, 'ownerErr:', ownerErr) // DEBUG
+
   if (!owner) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
   if (!role) {
@@ -23,40 +35,83 @@ export async function PATCH(req, { params }) {
 
   if (role !== 'owner') return NextResponse.json({ error: 'Owner access required' }, { status: 403 })
 
-  const { action } = await req.json() // 'approve' | 'reject'
-  if (!['approve', 'reject'].includes(action)) return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+  const body = await req.json()
+  const { action } = body
+  console.log('[PATCH /api/enrollments] action:', action) // DEBUG
 
-  // Get enrollment and verify it belongs to owner's property
-  const { data: enrollment } = await supabase
+  if (!['approve', 'reject'].includes(action)) {
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+  }
+
+  // ✅ Fetch enrollment WITHOUT any joins first — isolate the problem
+  const { data: enrollment, error: enrollErr } = await supabase
     .from('enrollments')
-    .select('*,users(id,full_name,email,qr_token),properties(id,name,owner_id),rooms(id,room_number)')
+    .select('*')
     .eq('id', id)
-    .single()
+    .maybeSingle()
 
-  if (!enrollment) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
-  if (enrollment.properties?.owner_id !== owner.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  if (enrollment.status !== 'pending') return NextResponse.json({ error: 'Enrollment is no longer pending' }, { status: 400 })
+  console.log('[PATCH /api/enrollments] enrollment:', enrollment, 'error:', enrollErr) // DEBUG
 
+  if (enrollErr) return NextResponse.json({ error: enrollErr.message }, { status: 500 })
+  if (!enrollment) return NextResponse.json({ error: `Enrollment not found for id: ${id}` }, { status: 404 })
+  if (enrollment.status !== 'pending') {
+    return NextResponse.json({ error: `Enrollment is no longer pending (status: ${enrollment.status})` }, { status: 400 })
+  }
+
+  // ✅ Verify ownership separately
+  const { data: property } = await supabase
+    .from('properties')
+    .select('id, owner_id')
+    .eq('id', enrollment.property_id)
+    .maybeSingle()
+
+  console.log('[PATCH /api/enrollments] property:', property) // DEBUG
+
+  if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+  if (property.owner_id !== owner.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+  // REJECT
   if (action === 'reject') {
-    await supabase.from('enrollments').update({ status: 'rejected', updated_at: new Date().toISOString() }).eq('id', id)
+    const { error: rejectErr } = await supabase
+      .from('enrollments')
+      .update({ status: 'rejected', updated_at: new Date().toISOString() })
+      .eq('id', id)
+    if (rejectErr) {
+      console.error('[PATCH /api/enrollments] reject error:', rejectErr)
+      return NextResponse.json({ error: rejectErr.message }, { status: 500 })
+    }
     return NextResponse.json({ success: true, status: 'rejected' })
   }
 
-  // APPROVE: mark room as filled, set enrollment active, generate QR if needed
-  const studentUser = enrollment.users
+  // APPROVE
+  // Fetch student separately to avoid FK ambiguity
+  const { data: studentUser } = await supabase
+    .from('users')
+    .select('id, full_name, email, qr_token')
+    .eq('id', enrollment.student_id)
+    .maybeSingle()
 
-  // Generate QR token for student if they don't have one
+  console.log('[PATCH /api/enrollments] studentUser:', studentUser) // DEBUG
+
+  if (!studentUser) return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+
+  // Generate QR token if needed
   let qrToken = studentUser.qr_token
   if (!qrToken) {
     qrToken = generateQRToken(studentUser.id)
     await supabase.from('users').update({ qr_token: qrToken }).eq('id', studentUser.id)
   }
 
-  // Mark room filled
-  await supabase.from('rooms').update({ status: 'filled' }).eq('id', enrollment.room_id)
+  // Mark room as filled
+  const { error: roomErr } = await supabase
+    .from('rooms')
+    .update({ status: 'filled' })
+    .eq('id', enrollment.room_id)
+
+  if (roomErr) console.error('[PATCH /api/enrollments] room update error:', roomErr)
 
   // Activate enrollment
-  const { data: updated, error } = await supabase
+  const { data: updated, error: updateErr } = await supabase
     .from('enrollments')
     .update({
       status: 'active',
@@ -67,9 +122,11 @@ export async function PATCH(req, { params }) {
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (updateErr) {
+    console.error('[PATCH /api/enrollments] activate error:', updateErr)
+    return NextResponse.json({ error: updateErr.message }, { status: 500 })
+  }
 
-  // Invalidate property cache
   await cacheDel(`property:${enrollment.property_id}`)
 
   return NextResponse.json({ success: true, status: 'active', enrollment: updated })

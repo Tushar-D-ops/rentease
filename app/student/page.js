@@ -45,7 +45,21 @@ export default function StudentDashboard() {
         <h1 className="font-syne font-bold text-3xl text-white mb-1">Hey, {user?.firstName} 👋</h1>
         <p className="text-[#7b82a8]">Here's what's happening with your accommodation</p>
       </div>
-
+       {/* {!loading && !data.student?.college_lng && (
+  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
+    <div className="flex items-center gap-3">
+      <span className="text-2xl">⚠️</span>
+      <div>
+        <div className="text-yellow-400 font-semibold text-sm">Set your college location</div>
+        <div className="text-[#7b82a8] text-xs">Required to show you nearby PGs only</div>
+      </div>
+    </div>
+    <Link href="/student/profile"
+      className="bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+      Update Now →
+    </Link> */}
+  {/* </div> */}
+{/* )} */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard icon="💳" label="Due This Month" value={pendingInvoice ? formatCurrency(pendingInvoice.total_amount) : '₹0'} sub={pendingInvoice ? `Due ${formatDate(pendingInvoice.due_date)}` : 'All paid up!'} color={pendingInvoice?'#f5a623':'#06d6a0'} loading={loading} />
         <StatCard icon={lastLog?.scan_type==='in'?'🟢':'🔴'} label="Current Status" value={lastLog?(lastLog.scan_type==='in'?'Inside':'Outside'):'No logs'} sub={lastLog?formatDate(lastLog.scanned_at,{hour:'2-digit',minute:'2-digit'}):'—'} color="#4f6ef7" loading={loading} />

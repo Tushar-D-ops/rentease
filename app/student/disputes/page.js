@@ -17,17 +17,23 @@ export default function StudentDisputesPage() {
   useEffect(() => { if (user) fetchData() }, [user])
 
   async function fetchData() {
-    const [{ data: d }, { data: student }] = await Promise.all([
-      fetch('/api/disputes').then(r=>r.json()),
-      supabase.from('users').select('id').eq('clerk_id',user.id).single(),
-    ])
-    setDisputes(Array.isArray(d) ? d : [])
-    if (student) {
-      const { data: enrollments } = await supabase.from('enrollments').select('property_id,properties(id,name)').eq('student_id',student.id).eq('status','active')
-      setProperties(enrollments?.map(e=>e.properties)||[])
-    }
-    setLoading(false)
+  const [disputes, { data: student }] = await Promise.all([
+    fetch('/api/disputes').then(r => r.json()),
+    supabase.from('users').select('id').eq('clerk_id', user.id).maybeSingle(),
+  ])
+
+  setDisputes(Array.isArray(disputes) ? disputes : [])
+
+  if (student) {
+    const { data: enrollments } = await supabase
+      .from('enrollments')
+      .select('property_id, properties(id,name)')
+      .eq('student_id', student.id)
+      .eq('status', 'active')
+    setProperties(enrollments?.map(e => e.properties).filter(Boolean) || [])
   }
+  setLoading(false)
+}
 
   async function handleSubmit() {
     if (!form.title || !form.description) return toast.error('Title and description are required')

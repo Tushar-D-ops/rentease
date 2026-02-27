@@ -6,24 +6,27 @@ import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = {
   student: [
-    { label: 'Overview',     href: '/student',             icon: '🏠' },
-    { label: 'Find PGs',     href: '/student/properties',  icon: '🔍' },
-    { label: 'Payments',     href: '/student/payments',    icon: '💳' },
-    { label: 'My QR Code',   href: '/student/qr',          icon: '📲' },
-    { label: 'Attendance',   href: '/student/attendance',  icon: '📋' },
-    { label: 'Disputes',     href: '/student/disputes',    icon: '⚖️' },
-    { label: 'Referrals',    href: '/student/referrals',   icon: '🎁' },
-    { label: 'AI Assistant', href: '/student/ai-chat',     icon: '🤖' },
-  ],
+  { label: 'Overview',     href: '/student',             icon: '🏠' },
+  { label: 'Find PGs',     href: '/student/properties',  icon: '🔍' },
+  { label: 'Payments',     href: '/student/payments',    icon: '💳' },
+  { label: 'My QR Code',   href: '/student/qr',          icon: '📲' },
+  { label: 'Attendance',   href: '/student/attendance',  icon: '📋' },
+  { label: 'Disputes',     href: '/student/disputes',    icon: '⚖️' },
+  { label: 'Referrals',    href: '/student/referrals',   icon: '🎁' },
+  { label: 'AI Assistant', href: '/student/ai-chat',     icon: '🤖' },
+  { label: 'My Profile',   href: '/student/profile',     icon: '👤' },
+],
   owner: [
     { label: 'Overview',      href: '/owner',               icon: '📊' },
     { label: 'Properties',    href: '/owner/properties',    icon: '🏢' },
     { label: 'Bookings',      href: '/owner/enrollments',   icon: '📥' },
     { label: 'Billing',       href: '/owner/billing',       icon: '💰' },
     { label: 'Electricity',   href: '/owner/electricity',   icon: '⚡' },
+    { label: 'QR Scanner',    href: '/owner/scanner',       icon: '📷' },
     { label: 'In/Out Logs',   href: '/owner/inout-logs',    icon: '📲' },
     { label: 'Analytics',     href: '/owner/analytics',     icon: '📈' },
     { label: 'Disputes',      href: '/owner/disputes',      icon: '⚖️' },
+    
   ],
   admin: [
     { label: 'Overview',      href: '/admin',           icon: '⚙️' },
