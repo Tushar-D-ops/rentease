@@ -40,28 +40,39 @@ export default function OwnerElectricityPage() {
     setRooms(data || [])
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (!selectedProp || !form.prev_reading || !form.curr_reading) return toast.error('Fill all required fields')
-    if (parseInt(form.curr_reading) <= parseInt(form.prev_reading)) return toast.error('Current reading must be greater than previous')
-    setSubmitting(true)
-    try {
-      const { error } = await supabase.from('electricity_bills').insert({
-        property_id: selectedProp,
-        room_id: form.room_id || null,
-        billing_month: form.billing_month + '-01',
-        prev_reading: parseInt(form.prev_reading),
-        curr_reading: parseInt(form.curr_reading),
-        rate_per_unit: parseInt(form.rate_per_unit),
-      })
-      if (error) throw error
-      toast.success('Electricity bill recorded!')
-      setShowForm(false)
-      setForm({ room_id:'', billing_month:format(startOfMonth(new Date()),'yyyy-MM'), prev_reading:'', curr_reading:'', rate_per_unit:800 })
-      fetchData()
-    } catch (err) { toast.error(err.message) }
-    finally { setSubmitting(false) }
+async function handleSubmit(e) {
+  e.preventDefault()
+  if (!selectedProp || !form.prev_reading || !form.curr_reading)
+    return toast.error('Fill all required fields')
+  if (parseInt(form.curr_reading) <= parseInt(form.prev_reading))
+    return toast.error('Current reading must be greater than previous')
+
+  setSubmitting(true)
+  try {
+    const res = await fetch('/api/electricity', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        property_id:    selectedProp,
+        room_id:        form.room_id || null,
+        billing_month:  form.billing_month + '-01',
+        prev_reading:   parseInt(form.prev_reading),
+        curr_reading:   parseInt(form.curr_reading),
+        rate_per_unit:  parseInt(form.rate_per_unit),
+      }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || 'Failed')
+    toast.success(`Bill saved! ${data.invoices_updated} student invoice(s) updated.`)
+    setShowForm(false)
+    setForm({ room_id:'', billing_month:format(startOfMonth(new Date()),'yyyy-MM'), prev_reading:'', curr_reading:'', rate_per_unit:800 })
+    fetchData()
+  } catch (err) {
+    toast.error(err.message)
+  } finally {
+    setSubmitting(false)
   }
+}
 
   const units = form.curr_reading && form.prev_reading ? Math.max(0, parseInt(form.curr_reading) - parseInt(form.prev_reading)) : 0
   const estimatedBill = units * parseInt(form.rate_per_unit || 800)
