@@ -32,6 +32,7 @@ export default function Sidebar({ role = 'student' }) {
       { label: 'In/Out Logs', href: '/owner/inout-logs', icon: '📲' },
       { label: 'Analytics', href: '/owner/analytics', icon: '📈' },
       { label: 'Disputes', href: '/owner/disputes', icon: '⚖️' },
+      { label: 'My Profile', href: '/owner/profile', icon: '👤' },
     ],
     admin: [
       { label: 'Overview', href: '/admin', icon: '⚙️' },

@@ -77,6 +77,33 @@ export default function OwnerBillingPage() {
   const studentsWithInvoice = new Set(invoices.filter(i=>i.billing_month===currentMonth).map(i=>i.student_id))
   const studentsWithoutInvoice = enrollments.filter(e=>!studentsWithInvoice.has(e.student_id))
 
+const underReviewInvoices = invoices.filter(i => i.status === 'under_review')
+const [confirming, setConfirming] = useState(null)
+async function handleConfirmPayment(invoiceId, action) {
+  setConfirming(invoiceId)
+  try {
+    const res = await fetch('/api/payments/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ invoiceId, action }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || 'Failed')
+
+    if (action === 'confirm') {
+      toast.success('Payment confirmed! Invoice marked as paid.')
+    } else {
+      toast.success('Payment rejected — student will be asked to resubmit.')
+    }
+    fetchData()
+  } catch (err) {
+    toast.error(err.message)
+  } finally {
+    setConfirming(null)
+  }
+}
+
+
   return (
     <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -118,6 +145,89 @@ export default function OwnerBillingPage() {
           </div>
         </div>
       )}
+
+
+{underReviewInvoices.length > 0 && (
+  <div className="mb-8">
+    <h2 className="font-syne font-bold text-xl text-white mb-4 flex items-center gap-2">
+      <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse inline-block" />
+      Pending Payment Confirmations ({underReviewInvoices.length})
+    </h2>
+    <div className="space-y-4">
+      {underReviewInvoices.map(inv => (
+        <div key={inv.id} className="bg-[#111527] border border-brand-500/30 rounded-2xl p-5">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+
+            {/* Screenshot preview */}
+            {inv.payment_proof_url && (
+              <a href={inv.payment_proof_url} target="_blank" rel="noopener noreferrer"
+                className="flex-shrink-0 group">
+                <img
+                  src={inv.payment_proof_url}
+                  alt="Payment screenshot"
+                  className="w-24 h-24 object-cover rounded-xl border border-white/10 group-hover:border-brand-500/50 transition-colors"
+                />
+                <div className="text-xs text-brand-400 text-center mt-1 group-hover:underline">View full</div>
+              </a>
+            )}
+
+            {/* Invoice details */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="font-semibold text-white">
+                  {inv.users?.full_name}
+                </span>
+                <span className="text-[#7b82a8] text-sm">·</span>
+                <span className="text-[#7b82a8] text-sm">
+                  {new Date(inv.billing_month).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
+                </span>
+                <span className="badge-info text-xs px-2 py-0.5 rounded-full">Under Review</span>
+              </div>
+
+              <div className="text-2xl font-syne font-bold text-brand-400 mb-2">
+                {formatCurrency(inv.total_amount)}
+              </div>
+
+              {/* Transaction ID */}
+              {inv.upi_txn_id && (
+                <div className="bg-[#0b0f1e] rounded-lg px-3 py-2 mb-3 inline-flex items-center gap-2">
+                  <span className="text-xs text-[#7b82a8]">Txn ID:</span>
+                  <span className="text-xs text-brand-400 font-mono">{inv.upi_txn_id}</span>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(inv.upi_txn_id); toast.success('Copied!') }}
+                    className="text-xs text-[#4a5070] hover:text-white ml-1">
+                    📋
+                  </button>
+                </div>
+              )}
+
+              <div className="text-xs text-[#7b82a8]">
+                Student: {inv.users?.email}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex sm:flex-col gap-2 flex-shrink-0">
+              <button
+                onClick={() => handleConfirmPayment(inv.id, 'confirm')}
+                disabled={confirming === inv.id}
+                className="flex-1 sm:flex-none bg-accent-green/20 hover:bg-accent-green/30 text-accent-green border border-accent-green/30 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50">
+                {confirming === inv.id ? '...' : '✅ Confirm'}
+              </button>
+              <button
+                onClick={() => handleConfirmPayment(inv.id, 'reject')}
+                disabled={confirming === inv.id}
+                className="flex-1 sm:flex-none bg-accent-red/20 hover:bg-accent-red/30 text-accent-red border border-accent-red/30 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50">
+                {confirming === inv.id ? '...' : '❌ Reject'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
 
   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
         <select value={selectedProp} onChange={e=>{setSelectedProp(e.target.value);setLoading(true)}}
