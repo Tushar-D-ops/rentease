@@ -61,15 +61,15 @@ export default function OwnerAnalyticsPage() {
   const d = analytics
 
   return (
-    <div>
+  <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="font-syne font-bold text-3xl text-white mb-1">Analytics</h1>
-        <p className="text-[#7b82a8]">Deep insights into your property portfolio</p>
+        <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">Analytics</h1>
+       <p className="text-[#7b82a8] text-sm sm:text-base">Deep insights into your property portfolio</p>
       </div>
 
-      <div className="flex flex-wrap gap-3 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-8">
         <select value={selectedProp} onChange={e=>{setSelectedProp(e.target.value);setLoading(true)}}
-          className="bg-[#111527] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white">
+          className="w-full sm:w-auto bg-[#111527] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white">
           <option value="all">All Properties</option>
           {properties.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
@@ -95,7 +95,7 @@ export default function OwnerAnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className="lg:col-span-2 bg-[#111527] border border-white/5 rounded-2xl p-6">
+        <div className="lg:col-span-2 bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-6">
           <h2 className="font-syne font-bold text-lg text-white mb-6">Monthly Revenue (₹)</h2>
           {d.revenueChart?.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
@@ -110,7 +110,7 @@ export default function OwnerAnalyticsPage() {
             </ResponsiveContainer>
           ) : <div className="h-56 flex items-center justify-center text-[#7b82a8]">No revenue data yet</div>}
         </div>
-        <div className="bg-[#111527] border border-white/5 rounded-2xl p-6">
+        <div className="bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-6">
           <h2 className="font-syne font-bold text-lg text-white mb-6">Payment Status</h2>
           {d.paymentPie?.some(p=>p.value>0) ? (
             <>
@@ -153,7 +153,8 @@ export default function OwnerAnalyticsPage() {
         <div className="p-6 border-b border-white/5"><h2 className="font-syne font-bold text-lg text-white">Active Tenants</h2></div>
         {loading ? <div className="p-6 space-y-3">{[...Array(3)].map((_,i)=><div key={i} className="shimmer h-12 rounded-xl"/>)}</div>
         : d.enrollments?.length > 0 ? (
-          <table className="w-full data-table">
+          <div className="overflow-x-auto">
+  <table className="min-w-[700px] w-full data-table">
             <thead><tr><th>Student</th><th>Property</th><th>Room</th><th>Monthly Rent</th><th>Since</th></tr></thead>
             <tbody>
               {d.enrollments.map(e=>(
@@ -167,6 +168,7 @@ export default function OwnerAnalyticsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         ) : <div className="text-center py-12 text-[#7b82a8]">No active tenants yet</div>}
       </div>
     </div>

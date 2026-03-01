@@ -56,15 +56,15 @@ export default function OwnerDisputesPage() {
   disputes.forEach(d=>{ if(stats[d.status]!==undefined) stats[d.status]++ })
 
   return (
-    <div>
+    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       <div className="mb-8">
-        <h1 className="font-syne font-bold text-3xl text-white mb-1">Disputes & Complaints</h1>
-        <p className="text-[#7b82a8]">Maintenance requests, billing disputes, and complaints from tenants</p>
+        <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">Disputes & Complaints</h1>
+       <p className="text-[#7b82a8] text-sm sm:text-base max-w-2xl">Maintenance requests, billing disputes, and complaints from tenants</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[['Open',stats.open,'#f5a623','🔔'],['Under Review',stats.under_review,'#4f6ef7','🔍'],['Resolved',stats.resolved,'#06d6a0','✅'],['Escalated',stats.escalated,'#ff4d6d','🚨']].map(([l,v,c,i])=>(
-          <div key={l} className="bg-[#111527] border border-white/5 rounded-2xl p-5">
+          <div key={l} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-5 shadow-lg hover:shadow-xl transition-all duration-300">
             <div className="text-2xl mb-2">{i}</div>
             <div className="font-syne font-bold text-2xl" style={{color:c}}>{v}</div>
             <div className="text-[#7b82a8] text-sm">{l}</div>
@@ -72,7 +72,7 @@ export default function OwnerDisputesPage() {
         ))}
       </div>
 
-      <div className="flex gap-2 mb-6 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 mb-6">
         {['all','open','under_review','resolved','escalated'].map(f=>(
           <button key={f} onClick={()=>setFilter(f)}
             className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${filter===f?'bg-brand-500 text-white':'bg-[#111527] text-[#7b82a8] border border-white/5 hover:text-white'}`}>
@@ -83,14 +83,14 @@ export default function OwnerDisputesPage() {
 
       {resolveForm.id && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#111527] border border-white/10 rounded-2xl p-6 w-full max-w-md">
+          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-5 sm:p-6 w-full max-w-md shadow-2xl">
             <h2 className="font-syne font-bold text-xl text-white mb-4">Mark as Resolved</h2>
             <form onSubmit={handleResolve} className="space-y-4">
               <div>
                 <label className="text-xs text-[#7b82a8] mb-2 block">Resolution Note *</label>
                 <textarea value={resolveForm.note} onChange={e=>setResolveForm(p=>({...p,note:e.target.value}))} rows={4}
                   placeholder="Describe what action was taken to fix this issue..."
-                  className="w-full bg-[#0b0f1e] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-[#4a5070] resize-none" />
+                  className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-[#4a5070] resize-none" />
               </div>
               <div className="flex gap-3">
                 <button type="submit" disabled={submitting} className="flex-1 bg-accent-green text-[#0d1117] font-semibold py-2.5 rounded-xl disabled:opacity-50">
@@ -107,9 +107,9 @@ export default function OwnerDisputesPage() {
       : filtered.length > 0 ? (
         <div className="space-y-3">
           {filtered.map(d=>(
-            <div key={d.id} className={`bg-[#111527] border rounded-2xl overflow-hidden transition-all ${expanded===d.id?'border-brand-500/30':'border-white/5 hover:border-white/10'}`}>
+            <div key={d.id} className={`bg-white/5 backdrop-blur-xl border rounded-2xl overflow-hidden transition-all shadow-md hover:shadow-lg ${expanded===d.id?'border-brand-500/30':'border-white/5 hover:border-white/10'}`}>
               <div className="p-5 cursor-pointer" onClick={()=>setExpanded(expanded===d.id?null:d.id)}>
-                <div className="flex items-start justify-between gap-4">
+               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 flex-wrap mb-1">
                       <h3 className="font-semibold text-white">{d.title}</h3>
@@ -126,8 +126,8 @@ export default function OwnerDisputesPage() {
                 <p className="text-[#7b82a8] text-sm mt-2 line-clamp-2">{d.description}</p>
               </div>
               {expanded === d.id && (
-                <div className="px-5 pb-5 border-t border-white/5 pt-4 space-y-4">
-                  <div className="bg-[#0b0f1e] rounded-xl p-4">
+                <div className="px-4 sm:px-5 pb-5 border-t border-white/10 pt-4 space-y-4">
+                  <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/5">
                     <div className="text-xs text-[#7b82a8] uppercase tracking-widest mb-2">Full Description</div>
                     <p className="text-white/90 text-sm leading-relaxed">{d.description}</p>
                   </div>
@@ -152,7 +152,7 @@ export default function OwnerDisputesPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-[#111527] border border-white/5 rounded-2xl">
+        <div className="text-center py-16 sm:py-20 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-lg">
           <div className="text-5xl mb-4">⚖️</div>
           <div className="text-white font-semibold mb-2">{filter==='all'?'No disputes yet':`No ${filter.replace('_',' ')} disputes`}</div>
           <div className="text-[#7b82a8]">{filter==='all'?'Disputes raised by your tenants appear here':'Try a different filter'}</div>

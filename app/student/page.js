@@ -40,10 +40,10 @@ export default function StudentDashboard() {
   const { enrollment, pendingInvoice, recentPayments, lastLog, referralCount } = data
 
   return (
-    <div>
+    <div className="w-full">
       <div className="mb-8">
-        <h1 className="font-syne font-bold text-3xl text-white mb-1">Hey, {user?.firstName} 👋</h1>
-        <p className="text-[#7b82a8]">Here's what's happening with your accommodation</p>
+        <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">Hey, {user?.firstName} 👋</h1>
+        <p className="text-[#7b82a8] text-sm sm:text-base">Here's what's happening with your accommodation</p>
       </div>
        {/* {!loading && !data.student?.college_lng && (
   <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
@@ -60,7 +60,7 @@ export default function StudentDashboard() {
     </Link> */}
   {/* </div> */}
 {/* )} */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard icon="💳" label="Due This Month" value={pendingInvoice ? formatCurrency(pendingInvoice.total_amount) : '₹0'} sub={pendingInvoice ? `Due ${formatDate(pendingInvoice.due_date)}` : 'All paid up!'} color={pendingInvoice?'#f5a623':'#06d6a0'} loading={loading} />
         <StatCard icon={lastLog?.scan_type==='in'?'🟢':'🔴'} label="Current Status" value={lastLog?(lastLog.scan_type==='in'?'Inside':'Outside'):'No logs'} sub={lastLog?formatDate(lastLog.scanned_at,{hour:'2-digit',minute:'2-digit'}):'—'} color="#4f6ef7" loading={loading} />
         <StatCard icon="🎁" label="Referrals" value={referralCount||0} sub="Successful referrals" color="#7c3aed" loading={loading} />
@@ -69,11 +69,11 @@ export default function StudentDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Current Accommodation */}
-        <div className="bg-[#111527] border border-white/5 rounded-2xl p-6">
+        <div className="bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-6">
           <h2 className="font-syne font-bold text-lg mb-4">Current Accommodation</h2>
           {enrollment ? (
             <div>
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
                 <div className="w-16 h-16 rounded-xl bg-[#1a2035] flex items-center justify-center text-2xl overflow-hidden">
                   {enrollment.properties?.images?.[0] ? <img src={enrollment.properties.images[0]} alt="" className="w-full h-full object-cover" /> : '🏠'}
                 </div>
@@ -83,7 +83,7 @@ export default function StudentDashboard() {
                   <div className="text-accent-green text-sm font-semibold">{formatCurrency(enrollment.monthly_rent)}/month</div>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Link href="/student/qr" className="flex-1 text-center bg-brand-500/10 text-brand-400 hover:bg-brand-500/20 text-sm font-semibold py-2 rounded-lg transition-colors">📲 My QR Code</Link>
                 <Link href="/student/payments" className="flex-1 text-center bg-white/5 text-white hover:bg-white/10 text-sm font-semibold py-2 rounded-lg transition-colors">💳 Payments</Link>
               </div>
@@ -98,12 +98,12 @@ export default function StudentDashboard() {
         </div>
 
         {/* Pending Invoice */}
-        <div className="bg-[#111527] border border-white/5 rounded-2xl p-6">
+        <div className="bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-6">
           <h2 className="font-syne font-bold text-lg mb-4">Next Payment</h2>
           {pendingInvoice ? (
             <div>
               <div className="space-y-3 mb-4">
-                <div className="flex justify-between text-sm"><span className="text-[#7b82a8]">Base Rent</span><span className="text-white">{formatCurrency(pendingInvoice.base_rent)}</span></div>
+                <div className="flex justify-between text-sm gap-3"><span className="text-[#7b82a8]">Base Rent</span><span className="text-white">{formatCurrency(pendingInvoice.base_rent)}</span></div>
                 {pendingInvoice.electricity_amount>0 && <div className="flex justify-between text-sm"><span className="text-[#7b82a8]">⚡ Electricity</span><span className="text-white">{formatCurrency(pendingInvoice.electricity_amount)}</span></div>}
                 {pendingInvoice.late_fee>0 && <div className="flex justify-between text-sm"><span className="text-accent-red">⚠️ Late Fee</span><span className="text-accent-red">{formatCurrency(pendingInvoice.late_fee)}</span></div>}
                 <div className="border-t border-white/5 pt-3 flex justify-between">
@@ -124,7 +124,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* Recent Payments */}
-        <div className="bg-[#111527] border border-white/5 rounded-2xl p-6">
+        <div className="bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="font-syne font-bold text-lg">Recent Payments</h2>
             <Link href="/student/payments" className="text-brand-400 text-sm hover:text-brand-300">View all →</Link>
@@ -132,7 +132,7 @@ export default function StudentDashboard() {
           {recentPayments?.length > 0 ? (
             <div className="space-y-3">
               {recentPayments.map((payment) => (
-                <div key={payment.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                <div key={payment.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b border-white/5 last:border-0">
                   <div>
                     <div className="text-sm font-medium text-white">Rent Payment</div>
                     <div className="text-xs text-[#7b82a8]">{formatDate(payment.paid_at)}</div>
@@ -150,9 +150,9 @@ export default function StudentDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-[#111527] border border-white/5 rounded-2xl p-6">
+        <div className="bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-6">
           <h2 className="font-syne font-bold text-lg mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
               { label:'Find PG',       icon:'🔍', href:'/student/properties', color:'#4f6ef7' },
               { label:'My QR',         icon:'📲', href:'/student/qr',         color:'#06d6a0' },
@@ -161,7 +161,7 @@ export default function StudentDashboard() {
               { label:'AI Assistant',  icon:'🤖', href:'/student/ai-chat',    color:'#06d6a0' },
               { label:'Attendance',    icon:'📋', href:'/student/attendance', color:'#ff4d6d' },
             ].map((action) => (
-              <Link key={action.href} href={action.href} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group">
+              <Link key={action.href} href={action.href} className="flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0" style={{ background:`${action.color}20` }}>{action.icon}</div>
                 <span className="text-sm font-medium text-white/80 group-hover:text-white">{action.label}</span>
               </Link>

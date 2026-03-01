@@ -72,22 +72,22 @@ export default function OwnerElectricityPage() {
   }, {})
 
   return (
-    <div>
+    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="font-syne font-bold text-3xl text-white mb-1">Electricity Bills</h1>
-          <p className="text-[#7b82a8]">Record meter readings — automatically added to student invoices</p>
+          <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">Electricity Bills</h1>
+          <p className="text-[#7b82a8] text-sm sm:text-base max-w-2xl">Record meter readings — automatically added to student invoices</p>
         </div>
-        <button onClick={()=>setShowForm(!showForm)} className="bg-gradient-to-r from-brand-500 to-accent-purple text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90">
+        <button onClick={()=>setShowForm(!showForm)} className="w-full max-sm:text-sm md:w-auto sm:w-auto bg-gradient-to-r from-brand-500 to-accent-purple text-white font-semibold px-2 py-3 rounded-xl hover:opacity-90">
           + Record Reading
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-[#111527] border border-brand-500/20 rounded-2xl p-6 mb-8">
+        <div className="bg-[#111527] border border-brand-500/20 rounded-2xl p-4 sm:p-6 mb-8">
           <h2 className="font-syne font-bold text-xl text-white mb-6">Record Meter Reading</h2>
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-[#7b82a8] mb-2 block">Property *</label>
                 <select value={selectedProp} onChange={e=>{setSelectedProp(e.target.value);setForm(p=>({...p,room_id:''}))}}
@@ -126,7 +126,7 @@ export default function OwnerElectricityPage() {
               </div>
             </div>
             {units > 0 && (
-              <div className="bg-[#0b0f1e] border border-accent-green/20 rounded-xl p-4 flex items-center gap-6">
+              <div className="bg-[#0b0f1e] border border-accent-green/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-6">
                 {[['Units Consumed',units,'#fff'],['Rate/Unit',`₹${(parseInt(form.rate_per_unit||0)/100).toFixed(2)}`,'#7b82a8'],['Bill Amount',formatCurrency(estimatedBill),'#06d6a0']].map(([l,v,c])=>(
                   <div key={l} className="text-center">
                     <div className="font-syne font-bold text-xl" style={{color:c}}>{v}</div>
@@ -135,11 +135,11 @@ export default function OwnerElectricityPage() {
                 ))}
               </div>
             )}
-            <div className="flex gap-3">
-              <button type="submit" disabled={submitting} className="bg-gradient-to-r from-brand-500 to-accent-purple text-white font-semibold px-6 py-3 rounded-xl disabled:opacity-50">
+           <div className="flex flex-col sm:flex-row gap-3">
+              <button type="submit" disabled={submitting} className="w-full sm:w-auto bg-gradient-to-r from-brand-500 to-accent-purple text-white font-semibold px-6 py-3 rounded-xl disabled:opacity-50">
                 {submitting ? '⏳ Saving...' : '⚡ Record Bill'}
               </button>
-              <button type="button" onClick={()=>setShowForm(false)} className="bg-white/5 text-white font-semibold px-6 py-3 rounded-xl">Cancel</button>
+              <button type="button" onClick={()=>setShowForm(false)} className="w-full sm:w-auto bg-white/5 text-white font-semibold px-6 py-3 rounded-xl">Cancel</button>
             </div>
           </form>
         </div>
@@ -150,12 +150,13 @@ export default function OwnerElectricityPage() {
         <div className="space-y-6">
           {Object.entries(billsByProp).map(([propName, propBills])=>(
             <div key={propName} className="bg-[#111527] border border-white/5 rounded-2xl overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/5 flex items-center gap-3">
+              <div className="px-4 sm:px-6 py-4 border-b border-white/5 flex flex-wrap items-center gap-3">
                 <span className="text-xl">⚡</span>
                 <h2 className="font-syne font-bold text-white">{propName}</h2>
                 <span className="badge-info text-xs px-2 py-0.5 rounded-full">{propBills.length} bills</span>
               </div>
-              <table className="w-full data-table">
+             <div className="w-full overflow-x-auto">
+  <table className="w-full min-w-[700px] data-table">
                 <thead><tr><th>Room</th><th>Month</th><th>Previous</th><th>Current</th><th>Units</th><th>Amount</th></tr></thead>
                 <tbody>
                   {propBills.map(b=>(
@@ -170,11 +171,12 @@ export default function OwnerElectricityPage() {
                   ))}
                 </tbody>
               </table>
+             </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-[#111527] border border-white/5 rounded-2xl">
+        <div className="text-center py-16 sm:py-20 px-4 bg-[#111527] border border-white/5 rounded-2xl">
           <div className="text-5xl mb-4">⚡</div>
           <div className="text-white font-semibold mb-2">No electricity bills yet</div>
           <div className="text-[#7b82a8]">{properties.length === 0 ? 'You need at least one approved property first' : 'Click "+ Record Reading" to get started'}</div>

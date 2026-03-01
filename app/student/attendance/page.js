@@ -26,24 +26,24 @@ export default function AttendancePage() {
   }
 
   return (
-    <div>
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       <div className="mb-8">
-        <h1 className="font-syne font-bold text-3xl text-white mb-1">Attendance Log</h1>
-        <p className="text-[#7b82a8]">Your entry and exit history</p>
+        <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">Attendance Log</h1>
+        <p className="text-[#7b82a8] text-sm sm:text-base">Your entry and exit history</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-[#111527] border border-white/5 rounded-2xl p-5 text-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-5 text-center">
           <div className="text-3xl mb-2">🟢</div>
           <div className="font-syne font-bold text-2xl text-white">{stats.ins}</div>
           <div className="text-[#7b82a8] text-sm">Check-ins</div>
         </div>
-        <div className="bg-[#111527] border border-white/5 rounded-2xl p-5 text-center">
+        <div className="bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-5 text-center">
           <div className="text-3xl mb-2">🔴</div>
           <div className="font-syne font-bold text-2xl text-white">{stats.outs}</div>
           <div className="text-[#7b82a8] text-sm">Check-outs</div>
         </div>
-        <div className="bg-[#111527] border border-accent-red/20 rounded-2xl p-5 text-center">
+        <div className="bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-5 text-center">
           <div className="text-3xl mb-2">🚨</div>
           <div className="font-syne font-bold text-2xl text-accent-red">{stats.violations}</div>
           <div className="text-[#7b82a8] text-sm">Curfew Violations</div>
@@ -51,7 +51,7 @@ export default function AttendancePage() {
       </div>
 
       <div className="bg-[#111527] border border-white/5 rounded-2xl">
-        <div className="p-6 border-b border-white/5">
+        <div className="p-4 sm:p-6 border-b border-white/5">
           <h2 className="font-syne font-bold text-lg text-white">Entry/Exit Log</h2>
         </div>
         {loading ? (
@@ -59,24 +59,24 @@ export default function AttendancePage() {
         ) : logs.length > 0 ? (
           <div className="divide-y divide-white/5">
             {logs.map((log) => (
-              <div key={log.id} className={`flex items-center justify-between p-4 ${log.is_curfew_violation?'bg-accent-red/5':''}`}>
+              <div key={log.id} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 ${log.is_curfew_violation?'bg-accent-red/5':''}`}>
                 <div className="flex items-center gap-3">
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${log.scan_type==='in'?'bg-accent-green/10':'bg-accent-red/10'}`}>
                     {log.scan_type === 'in' ? '🟢' : '🔴'}
                   </div>
                   <div>
                     <div className="text-sm font-medium text-white">Check {log.scan_type === 'in' ? 'IN' : 'OUT'}</div>
-                    <div className="text-xs text-[#7b82a8]">{new Date(log.scanned_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})}</div>
+                    <div className="text-xs sm:text-sm text-[#7b82a8] break-words">{new Date(log.scanned_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})}</div>
                   </div>
                 </div>
                 {log.is_curfew_violation && (
-                  <span className="badge-danger text-xs px-2 py-0.5 rounded-full">⚠️ Curfew Violation</span>
+                  <span className="badge-danger text-xs px-2 py-0.5 rounded-full self-start sm:self-auto">⚠️ Curfew Violation</span>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="text-center py-10 sm:py-12 px-4">
             <div className="text-4xl mb-3">📋</div>
             <div className="text-[#7b82a8]">No entry/exit logs yet. Your QR scan history will appear here.</div>
           </div>

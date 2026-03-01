@@ -91,14 +91,14 @@ export default function OwnerPropertiesPage() {
   const STATUS_COLORS = { pending:'badge-warning', approved:'badge-success', rejected:'badge-danger', suspended:'badge-danger' }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <div>
+    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <div className="mb-8">
+        
           <h1 className="font-syne font-bold text-3xl text-white mb-1">My Properties</h1>
           <p className="text-[#7b82a8]">Manage your PGs, messes, and accommodations</p>
-        </div>
+        
         <button onClick={() => setShowForm(!showForm)}
-          className="bg-gradient-to-r from-brand-500 to-accent-purple text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90">
+          className="w-full max-sm:text-sm md:w-auto sm:w-auto bg-gradient-to-r from-brand-500 to-accent-purple text-white font-semibold px-2 py-3 rounded-xl hover:opacity-90">
           + Add Property
         </button>
       </div>

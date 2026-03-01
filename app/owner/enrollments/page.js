@@ -44,14 +44,14 @@ export default function OwnerEnrollmentsPage() {
   }
 
   return (
-    <div>
+    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       <div className="mb-8">
-        <h1 className="font-syne font-bold text-3xl text-white mb-1">Booking Requests</h1>
-        <p className="text-[#7b82a8]">Review and manage student enrollment requests</p>
+        <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">Booking Requests</h1>
+        <p className="text-[#7b82a8] text-sm sm:text-base max-w-2xl">Review and manage student enrollment requests</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 bg-[#111527] border border-white/5 rounded-xl p-1.5 w-fit">
+      <div className="flex max-md:text-sm gap-2 mb-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-1.5 w-full sm:w-fit">
         {STATUS_TABS.map(s => (
           <button key={s} onClick={() => setTab(s)}
             className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
@@ -69,7 +69,7 @@ export default function OwnerEnrollmentsPage() {
           ))}
         </div>
       ) : enrollments.length === 0 ? (
-        <div className="text-center py-20 bg-[#111527] border border-white/5 rounded-2xl">
+        <div className="text-center py-16 sm:py-20 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-lg">
           <div className="text-5xl mb-4">{tab === 'pending' ? '📭' : tab === 'active' ? '🏠' : '📋'}</div>
           <div className="text-white font-semibold mb-2">No {tab} requests</div>
           <div className="text-[#7b82a8] text-sm">
@@ -79,8 +79,8 @@ export default function OwnerEnrollmentsPage() {
       ) : (
         <div className="space-y-4">
           {enrollments.map(en => (
-            <div key={en.id} className="bg-[#111527] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
-              <div className="flex items-start justify-between gap-4">
+            <div key={en.id} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 hover:border-white/20 transition-all shadow-lg">
+             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-accent-purple flex items-center justify-center text-sm font-bold text-white">
@@ -92,7 +92,7 @@ export default function OwnerEnrollmentsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
                     <div className="bg-white/5 rounded-lg p-3">
                       <div className="text-xs text-[#7b82a8] mb-1">Property</div>
                       <div className="text-sm font-medium text-white">{en.properties?.name}</div>
@@ -120,7 +120,7 @@ export default function OwnerEnrollmentsPage() {
                 </div>
 
                 {tab === 'pending' && (
-                  <div className="flex flex-col gap-2 flex-shrink-0">
+                  <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto flex-shrink-0">
                     <button
                       onClick={() => handleAction(en.id, 'approve')}
                       disabled={processing === en.id}
@@ -137,7 +137,7 @@ export default function OwnerEnrollmentsPage() {
                 )}
 
                 {tab === 'active' && (
-                  <div className="flex-shrink-0">
+                  <div className="w-full lg:w-auto flex-shrink-0">
                     <span className="badge-success text-xs px-3 py-1.5 rounded-full">Active</span>
                   </div>
                 )}

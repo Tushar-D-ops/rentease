@@ -111,11 +111,17 @@ export default function StudentProfilePage() {
         <div className="bg-accent-green/10 border border-accent-green/30 rounded-xl p-4 mb-6 flex items-start gap-3">
           <span className="text-2xl">📍</span>
           <div>
-            <div className="text-accent-green font-semibold text-sm">College location is set</div>
+            <div className="text-accent-green font-semibold text-sm ">College location is set</div>
+            <div className='flex flex-1 flex-wrap'>
+
             <p className="text-[#7b82a8] text-xs mt-1">
               Lat: <span className="text-white">{profile.college_lat}</span> &nbsp;|&nbsp;
-              Lng: <span className="text-white">{profile.college_lng}</span>
+              
             </p>
+            <p className="text-[#7b82a8] text-xs mt-1">
+                Lng: <span className="text-white">{profile.college_lng}</span>
+            </p>
+            </div>
           </div>
         </div>
       )}

@@ -78,21 +78,21 @@ export default function OwnerBillingPage() {
   const studentsWithoutInvoice = enrollments.filter(e=>!studentsWithInvoice.has(e.student_id))
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
+    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-syne font-bold text-3xl text-white mb-1">Billing</h1>
-          <p className="text-[#7b82a8]">Manage invoices — cron runs 1st of each month automatically</p>
+          <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">Billing</h1>
+          <p className="text-[#7b82a8] text-sm sm:text-base">Manage invoices — cron runs 1st of each month automatically</p>
         </div>
         <button onClick={handleManualBilling} disabled={triggeringBilling}
-          className="bg-gradient-to-r from-brand-500 to-accent-purple text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 disabled:opacity-50">
+          className="w-full sm:w-auto bg-gradient-to-r from-brand-500 to-accent-purple text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 disabled:opacity-50 transition-all duration-300 backdrop-blur-md">
           {triggeringBilling ? '⏳ Generating...' : '🔄 Trigger Monthly Billing'}
         </button>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[['Total Billed',formatCurrency(stats.totalBilled),'#fff'],['Collected',formatCurrency(stats.collected),'#06d6a0'],['Pending',stats.pending,'#f5a623'],['Overdue',stats.overdue,'#ff4d6d']].map(([l,v,c])=>(
-          <div key={l} className="bg-[#111527] border border-white/5 rounded-2xl p-5">
+          <div key={l} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-5 shadow-lg hover:shadow-xl transition-all duration-300">
             <div className="text-[#7b82a8] text-xs uppercase tracking-widest mb-2">{l}</div>
             <div className="font-syne font-bold text-2xl" style={{color:c}}>{v}</div>
           </div>
@@ -100,14 +100,14 @@ export default function OwnerBillingPage() {
       </div>
 
       {studentsWithoutInvoice.length > 0 && (
-        <div className="bg-[#111527] border border-accent-gold/20 rounded-2xl p-6 mb-8">
+        <div className="bg-white/5 backdrop-blur-xl border border-accent-gold/30 rounded-2xl p-4 sm:p-6 mb-8 shadow-lg">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-xl">⚠️</span>
             <h2 className="font-syne font-bold text-white">{studentsWithoutInvoice.length} student{studentsWithoutInvoice.length>1?'s':''} without invoice this month</h2>
           </div>
           <div className="space-y-2">
             {studentsWithoutInvoice.map(e=>(
-              <div key={e.id} className="flex items-center justify-between bg-[#0b0f1e] rounded-xl px-4 py-3">
+              <div key={e.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white/5 backdrop-blur-md rounded-xl px-4 py-3 border border-white/5">
                 <div>
                   <div className="text-sm text-white font-medium">{e.users?.full_name}</div>
                   <div className="text-xs text-[#7b82a8]">{e.properties?.name} · Room {e.rooms?.room_number||'—'} · {formatCurrency(e.monthly_rent)}/mo</div>
@@ -119,7 +119,7 @@ export default function OwnerBillingPage() {
         </div>
       )}
 
-      <div className="flex gap-2 mb-4 flex-wrap">
+  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
         <select value={selectedProp} onChange={e=>{setSelectedProp(e.target.value);setLoading(true)}}
           className="bg-[#111527] border border-white/10 rounded-xl px-4 py-2 text-sm text-white">
           <option value="all">All Properties</option>
@@ -133,9 +133,9 @@ export default function OwnerBillingPage() {
         ))}
       </div>
 
-      <div className="bg-[#111527] border border-white/5 rounded-2xl overflow-hidden">
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
-          <table className="w-full data-table">
+          <table className="min-w-[900px] w-full data-table text-sm">
             <thead><tr><th>Student</th><th>Property</th><th>Month</th><th>Rent</th><th>⚡</th><th>Late Fee</th><th>Total</th><th>Status</th><th>Due</th></tr></thead>
             <tbody>
               {loading ? [...Array(5)].map((_,i)=><tr key={i}>{[...Array(9)].map((_,j)=><td key={j} className="p-4"><div className="shimmer h-4 rounded"/></td>)}</tr>)

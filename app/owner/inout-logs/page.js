@@ -49,13 +49,13 @@ export default function InOutLogsPage() {
   })
 
   return (
-    <div>
+    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       <div className="mb-8">
-        <h1 className="font-syne font-bold text-3xl text-white mb-1">In/Out Logs</h1>
-        <p className="text-[#7b82a8]">Real-time gate entry and exit tracking for all your properties</p>
+        <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">In/Out Logs</h1>
+        <p className="text-[#7b82a8] text-sm sm:text-base max-w-2xl">Real-time gate entry and exit tracking for all your properties</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div className="bg-[#111527] border border-accent-green/20 rounded-2xl p-5 flex items-center gap-4">
           <div className="w-3 h-3 rounded-full bg-accent-green animate-pulse flex-shrink-0" />
           <div>
@@ -74,9 +74,9 @@ export default function InOutLogsPage() {
       </div>
 
       {properties.length > 1 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
           {properties.map(p=>(
-            <div key={p.id} className="bg-[#111527] border border-white/5 rounded-xl p-4">
+            <div key={p.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 shadow-md">
               <div className="font-semibold text-white text-sm mb-2 truncate">{p.name}</div>
               <div className="flex gap-3 text-xs">
                 <span className="text-accent-green">🟢 {propStatusMap[p.id]?.inside||0} inside</span>
@@ -87,13 +87,13 @@ export default function InOutLogsPage() {
         </div>
       )}
 
-      <div className="flex gap-3 mb-6 flex-wrap">
+     <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
         <select value={selectedProp} onChange={e=>{setSelectedProp(e.target.value);setLoading(true)}}
           className="bg-[#111527] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white">
           <option value="">All Properties</option>
           {properties.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
-        <div className="flex bg-[#111527] border border-white/5 rounded-xl p-1 gap-1">
+        <div className="flex w-full sm:w-auto bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1 gap-1">
           {[['today','Today'],['week','This Week'],['all','All Time']].map(([v,l])=>(
             <button key={v} onClick={()=>{setDateFilter(v);setLoading(true)}}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${dateFilter===v?'bg-brand-500 text-white':'text-[#7b82a8] hover:text-white'}`}>{l}</button>
@@ -101,8 +101,9 @@ export default function InOutLogsPage() {
         </div>
       </div>
 
-      <div className="bg-[#111527] border border-white/5 rounded-2xl overflow-hidden">
-        <table className="w-full data-table">
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+        <div className="overflow-x-auto">
+  <table className="min-w-[750px] w-full data-table text-sm">
           <thead><tr><th>Student</th><th>Property</th><th>Action</th><th>Time (IST)</th><th>Curfew</th></tr></thead>
           <tbody>
             {loading ? [...Array(8)].map((_,i)=><tr key={i}>{[...Array(5)].map((_,j)=><td key={j} className="p-4"><div className="shimmer h-4 rounded"/></td>)}</tr>)
@@ -121,6 +122,7 @@ export default function InOutLogsPage() {
             )) : <tr><td colSpan={5} className="p-8 text-center text-[#7b82a8]">No logs for selected filters</td></tr>}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

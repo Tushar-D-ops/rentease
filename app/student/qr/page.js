@@ -31,30 +31,30 @@ export default function StudentQRPage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto">
+    <div className="w-full max-w-xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
       <div className="mb-8">
-        <h1 className="font-syne font-bold text-3xl text-white mb-1">My QR Code</h1>
-        <p className="text-[#7b82a8]">Show this at the gate to log your entry or exit</p>
+        <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">My QR Code</h1>
+        <p className="text-[#7b82a8] text-sm sm:text-base">Show this at the gate to log your entry or exit</p>
       </div>
 
-      <div className="bg-[#111527] border border-white/5 rounded-2xl p-8 text-center">
+      <div className="bg-[#111527] border border-white/5 rounded-2xl p-4 sm:p-6 md:p-8 text-center">
         {loading ? (
-          <div className="w-64 h-64 mx-auto shimmer rounded-2xl" />
+          <div className="w-52 h-52 sm:w-60 sm:h-60 md:w-64 md:h-64 mx-auto shimmer rounded-2xl" />
         ) : qrData?.qrDataURL ? (
           <div>
-            <div className="relative w-64 h-64 mx-auto mb-6">
+            <div className="relative w-52 h-52 sm:w-60 sm:h-60 md:w-64 md:h-64 mx-auto mb-6">
               <div className="absolute inset-0 rounded-2xl bg-white p-4">
                 <img src={qrData.qrDataURL} alt="Your QR Code" className="w-full h-full" />
               </div>
               <div className="absolute left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-brand-500 to-transparent shadow-[0_0_8px_#4f6ef7] animate-scan pointer-events-none" />
             </div>
-            <div className="font-syne font-bold text-xl text-white mb-1">{user?.firstName} {user?.lastName}</div>
+            <div className="font-syne font-bold text-lg sm:text-xl text-white mb-1">{user?.firstName} {user?.lastName}</div>
             <div className="text-[#7b82a8] text-sm mb-6">Student ID · RentEase Verified</div>
             <div className="bg-[#0b0f1e] border border-white/5 rounded-xl p-3 mb-6">
               <div className="text-xs text-[#7b82a8] mb-1 uppercase tracking-widest">Token</div>
-              <div className="text-xs text-brand-400 font-mono break-all">{qrData.token?.slice(0,32)}...</div>
+              <div className="text-xs text-brand-400 font-mono break-all leading-relaxed">{qrData.token?.slice(0,32)}...</div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={generateQR} disabled={regenerating}
                 className="flex-1 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-50">
                 {regenerating ? '⏳ Generating...' : '🔄 Regenerate'}
@@ -78,7 +78,7 @@ export default function StudentQRPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
         <div className="bg-[#111527] border border-white/5 rounded-xl p-4">
           <div className="text-lg mb-2">🔐</div>
           <div className="text-sm font-semibold text-white mb-1">Encrypted & Secure</div>

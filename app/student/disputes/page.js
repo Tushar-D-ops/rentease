@@ -56,13 +56,13 @@ export default function StudentDisputesPage() {
   const statusColor = { open:'badge-warning', under_review:'badge-info', resolved:'badge-success', escalated:'badge-danger' }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="font-syne font-bold text-3xl text-white mb-1">Disputes</h1>
-          <p className="text-[#7b82a8]">Raise and track disputes with your PG owner</p>
+          <h1 className="font-syne font-bold text-2xl sm:text-3xl lg:text-4xl text-white mb-1">Disputes</h1>
+          <p className="text-[#7b82a8] text-sm sm:text-base">Raise and track disputes with your PG owner</p>
         </div>
-        <button onClick={()=>setShowForm(!showForm)} className="bg-brand-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-brand-600 transition-colors">
+        <button onClick={()=>setShowForm(!showForm)} className="w-full sm:w-auto bg-brand-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-brand-600 transition-colors">
           + Raise Dispute
         </button>
       </div>
@@ -89,11 +89,11 @@ export default function StudentDisputesPage() {
               <textarea value={form.description} onChange={(e)=>setForm(p=>({...p,description:e.target.value}))} rows={4} placeholder="Describe the issue in detail..."
                 className="w-full bg-[#0b0f1e] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-[#4a5070] resize-none" />
             </div>
-            <div className="flex gap-3">
-              <button onClick={handleSubmit} disabled={submitting} className="bg-brand-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-brand-600 disabled:opacity-50 transition-colors">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button onClick={handleSubmit} disabled={submitting} className="w-full sm:w-auto bg-brand-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-brand-600 disabled:opacity-50 transition-colors">
                 {submitting ? 'Submitting...' : 'Submit Dispute'}
               </button>
-              <button onClick={()=>setShowForm(false)} className="bg-white/5 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-white/10 transition-colors">Cancel</button>
+              <button onClick={()=>setShowForm(false)} className="">Cancel</button>
             </div>
           </div>
         </div>
