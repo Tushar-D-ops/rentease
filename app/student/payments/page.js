@@ -99,46 +99,46 @@ export default function StudentPaymentsPage() {
     setPreview(URL.createObjectURL(file))
   }
 
-  async function handleSubmitProof() {
-    if (!screenshot) return toast.error('Please upload your payment screenshot')
-    if (!txnId.trim()) return toast.error('Please enter your UPI Transaction ID')
-    setSubmitting(true)
+async function handleSubmitProof() {
+  if (!screenshot) return toast.error('Please upload your payment screenshot')
+  if (!txnId.trim()) return toast.error('Please enter your UPI Transaction ID')
+  setSubmitting(true)
 
-    try {
-      // Upload screenshot to Supabase Storage bucket "payment-proofs"
-      const ext  = screenshot.name.split('.').pop()
-      const path = `${payingInvoice.id}/${Date.now()}.${ext}`
+  try {
+    // Step 1: Upload screenshot
+    const formData = new FormData()
+    formData.append('file', screenshot)
+    formData.append('invoiceId', payingInvoice.id)
 
-      const { error: uploadErr } = await supabase.storage
-        .from('payment-proofs')
-        .upload(path, screenshot, { contentType: screenshot.type, upsert: true })
+    const uploadRes = await fetch('/api/payments/upload-proof', {
+      method: 'POST',
+      body: formData,
+    })
+    const uploadData = await uploadRes.json()
+    if (!uploadRes.ok) throw new Error(uploadData.error || 'Screenshot upload failed')
 
-      if (uploadErr) throw new Error('Screenshot upload failed: ' + uploadErr.message)
+    // Step 2: Save proof + mark under_review
+    const updateRes = await fetch('/api/payments/submit-proof', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        invoiceId:       payingInvoice.id,
+        paymentProofUrl: uploadData.url,
+        upiTxnId:        txnId.trim(),
+      }),
+    })
+    const updateData = await updateRes.json()
+    if (!updateRes.ok) throw new Error(updateData.error || 'Failed to save proof')
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('payment-proofs').getPublicUrl(path)
-
-      // Save proof to invoice + mark as under_review
-      const { error: updateErr } = await supabase
-        .from('invoices')
-        .update({
-          status:            'under_review',
-          payment_proof_url: publicUrl,
-          upi_txn_id:        txnId.trim(),
-        })
-        .eq('id', payingInvoice.id)
-
-      if (updateErr) throw new Error(updateErr.message)
-
-      toast.success('Payment proof submitted! Owner will verify and confirm.')
-      closeModal()
-      fetchData()
-    } catch (err) {
-      toast.error(err.message || 'Failed to submit proof')
-    } finally {
-      setSubmitting(false)
-    }
+    toast.success('Payment proof submitted! Owner will verify and confirm.')
+    closeModal()
+    fetchData()
+  } catch (err) {
+    toast.error(err.message || 'Failed to submit proof')
+  } finally {
+    setSubmitting(false)
   }
+}
 
   const pendingInvoices = invoices.filter(i => ['pending', 'overdue'].includes(i.status))
   const reviewInvoices  = invoices.filter(i => i.status === 'under_review')
