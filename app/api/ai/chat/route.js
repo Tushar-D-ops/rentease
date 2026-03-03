@@ -7,8 +7,8 @@ import { apiRateLimit } from '@/lib/redis/client'
 export async function POST(req) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const { success } = await apiRateLimit.limit(`ai:${userId}`)
-  if (!success) return NextResponse.json({ error: 'Too many requests. Please wait.' }, { status: 429 })
+  // const { success } = await apiRateLimit.limit(`ai:${userId}`)
+  // if (!success) return NextResponse.json({ error: 'Too many requests. Please wait.' }, { status: 429 })
   const { messages } = await req.json()
   if (!messages?.length) return NextResponse.json({ error: 'messages required' }, { status: 400 })
   const supabase = getSupabaseAdmin()
@@ -22,7 +22,15 @@ export async function POST(req) {
     const reply = await chatWithGemini(messages, userContext)
     return NextResponse.json({ reply })
   } catch (err) {
-    console.error('[AI Chat Error]', err)
-    return NextResponse.json({ error: 'AI service unavailable.' }, { status: 503 })
+  console.error('[AI Chat Error]', err)
+  
+  // ✅ Give a helpful message instead of generic "unavailable"
+  if (err.status === 429) {
+    return NextResponse.json({ 
+      error: 'RentBot is resting for a bit 😴 Free tier limit reached. Try again in a few minutes!' 
+    }, { status: 429 })
   }
+  
+  return NextResponse.json({ error: 'AI service unavailable.' }, { status: 503 })
+}
 }

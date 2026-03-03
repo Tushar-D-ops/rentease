@@ -21,27 +21,36 @@ export default function AIChatPage() {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 
-  async function sendMessage(text) {
-    const userMsg =input.trim()
-    if (!userMsg || loading) return
-    setInput('')
-    const newMessages = [...messages, { role:'user', content:userMsg }]
-    setMessages(newMessages)
-    setLoading(true)
-    try {
-      const res = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages }),
-      })
-      if (!res.ok) throw new Error((await res.json()).error || 'AI unavailable')
-      const { reply } = await res.json()
-      setMessages([...newMessages, { role:'assistant', content:reply }])
-    } catch (err) {
-      toast.error(err.message || 'Failed to get response')
-      setMessages([...newMessages, { role:'assistant', content:"Sorry, I'm having trouble right now. Please try again! 🙏" }])
-    } finally { setLoading(false) }
+async function sendMessage(text) {
+  const userMsg = (typeof text === 'string' ? text : input).trim()
+  if (!userMsg || loading) return
+  
+  setInput('')
+  setLoading(true)
+  
+  const newMessages = [...messages, { role: 'user', content: userMsg }]
+  setMessages(newMessages)
+
+  try {
+    const res = await fetch('/api/ai/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: newMessages }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || 'AI unavailable')
+    
+    setMessages(prev => [...prev, { role: 'assistant', content: data.reply }])
+  } catch (err) {
+    toast.error(err.message || 'Failed to get response')
+    setMessages(prev => [...prev, { 
+      role: 'assistant', 
+      content: "Sorry, I'm having trouble right now. Please try again! 🙏" 
+    }])
+  } finally {
+    setLoading(false)  // ✅ always runs, guaranteed
   }
+}
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col h-[calc(100vh-70px)] sm:h-[calc(100vh-80px)]">
