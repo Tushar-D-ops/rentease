@@ -35,16 +35,16 @@ export default function StudentPaymentsPage() {
 
   // Handle Stripe redirect back
   useEffect(() => {
-    if (searchParams.get('success') === 'true') {
-      toast.success('🎉 Payment successful! Invoice marked as paid.')
-      // Clean URL
-      window.history.replaceState({}, '', '/student/payments')
-    }
-    if (searchParams.get('cancelled') === 'true') {
-      toast.error('Payment cancelled. You can try again anytime.')
-      window.history.replaceState({}, '', '/student/payments')
-    }
-  }, [searchParams])
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('success') === 'true') {
+    toast.success('🎉 Payment successful! Invoice marked as paid.')
+    window.history.replaceState({}, '', '/student/payments')
+  }
+  if (params.get('cancelled') === 'true') {
+    toast.error('Payment cancelled. You can try again anytime.')
+    window.history.replaceState({}, '', '/student/payments')
+  }
+}, [])
 
   useEffect(() => { if (user) fetchData() }, [user])
 

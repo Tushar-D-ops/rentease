@@ -75,7 +75,7 @@ export default function Sidebar({ role = 'student' }) {
         <div className="p-5 border-b border-white/5 flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-accent-purple flex items-center justify-center text-lg">🏠</div>
+              <img src="/RentEase_Logo2.png" alt="RentEase" className="w-10 h-10 object-cover" />
               <div className="font-syne font-bold text-white text-sm">RentEase</div>
             </div>
           )}
