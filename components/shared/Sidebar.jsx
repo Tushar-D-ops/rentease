@@ -40,7 +40,6 @@ export default function Sidebar({ role = 'student' }) {
       { label: 'Users', href: '/admin/users', icon: '👥' },
       { label: 'Disputes', href: '/admin/disputes', icon: '⚖️' },
       { label: 'Revenue', href: '/admin/revenue', icon: '💰' },
-      { label: 'Fraud Monitor', href: '/admin/fraud', icon: '🛡️' },
     ],
   }
 
