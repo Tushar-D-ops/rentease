@@ -7,8 +7,7 @@ import { constructStripeEvent } from '@/lib/stripe/client'
 import { getSupabaseAdmin } from '@/lib/supabase/server'
 import { sendPaymentSuccessEmail, sendPaymentFailedEmail } from '@/lib/email'
 
-// ✅ Must disable body parser — Stripe needs raw body for signature verification
-export const config = { api: { bodyParser: false } }
+
 
 export async function POST(req) {
   const body      = await req.text()
