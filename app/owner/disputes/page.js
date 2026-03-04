@@ -142,8 +142,14 @@ export default function OwnerDisputesPage() {
                       {d.status === 'open' && (
                         <button onClick={()=>updateStatus(d.id,'under_review')} className="badge-info text-xs px-4 py-2 rounded-lg font-semibold cursor-pointer hover:opacity-80">🔍 Mark Under Review</button>
                       )}
+                      {d.status === 'escalated'? (<>
+                        <p>🚨 Escalated to Admin</p>
+                      </>):
+                      <>
                       <button onClick={()=>setResolveForm({id:d.id,note:''})} className="badge-success text-xs px-4 py-2 rounded-lg font-semibold cursor-pointer hover:opacity-80">✅ Mark Resolved</button>
                       <button onClick={()=>updateStatus(d.id,'escalated')} className="badge-danger text-xs px-4 py-2 rounded-lg font-semibold cursor-pointer hover:opacity-80">🚨 Escalate to Admin</button>
+                      </>}
+                      
                     </div>
                   )}
                 </div>
