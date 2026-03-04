@@ -23,7 +23,7 @@ export default function AdminRevenuePage() {
     // NO property_id column — must join via invoice_id
     const { data: rawPayments, error } = await supabase
       .from('payments')
-      .select('id, invoice_id, student_id, amount, platform_fee, paid_at, razorpay_payment_id')
+      .select('id, invoice_id, student_id, amount, platform_fee, paid_at, payment_intent_id')
       .eq('status', 'captured')
       .order('paid_at', { ascending: false })
 
@@ -213,7 +213,7 @@ export default function AdminRevenuePage() {
                       <td className="p-4 text-green-400 font-semibold">{formatCurrency(pay.amount)}</td>
                       <td className="p-4 text-brand-400">{formatCurrency(Math.floor((pay.amount || 0) * 0.01))}</td>
                       <td className="p-4 text-[#7b82a8] font-mono text-xs">
-                        {pay.razorpay_payment_id ? pay.razorpay_payment_id.slice(0, 22) + '...' : '—'}
+                       {pay.payment_intent_id ? pay.payment_intent_id.slice(0, 22) + '...' : '—'}
                       </td>
                     </tr>
                   ))}

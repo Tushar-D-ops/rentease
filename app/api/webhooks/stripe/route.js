@@ -72,17 +72,21 @@ export async function POST(req) {
           .eq('id', invoiceId)
 
         // ── Record in payments table ──
-        await supabase.from('payments').insert({
-          invoice_id:          invoiceId,
-          student_id:          invoice.student_id,
-          property_id:         invoice.property_id,
-          amount:              invoice.total_amount,
-          type:                'rent',
-          razorpay_payment_id: session.payment_intent, // reusing column for Stripe payment intent ID
-          status:              'captured',
-          platform_fee:        Math.floor(invoice.total_amount * 0.01), // 1% platform fee tracking
-          paid_at:             now,
-        })
+  const { data: payData, error: payErr } = await supabase.from('payments').insert({
+  invoice_id:          invoiceId,
+  student_id:          invoice.student_id,
+  property_id:         invoice.property_id,
+  amount:              invoice.total_amount,
+  type:                'rent',
+  payment_intent_id:   session.payment_intent,
+  checkout_session_id: session.id,
+  status:              'captured',
+  platform_fee:        Math.floor(invoice.total_amount * 0.01),
+  paid_at:             now,
+})
+console.error('[Webhook] Payment insert error:', payErr)
+console.log('[Webhook] Payment insert data:', payData)
+        
 
         // ── Update analytics snapshot ──
         const today = now.split('T')[0]
