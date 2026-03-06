@@ -10,7 +10,7 @@ const STATUS_COLORS = {
   resolved:     'bg-green-500/10 text-green-400 border-green-500/20',
   escalated:    'bg-red-500/10 text-red-400 border-red-500/20',
 }
-const STATUS_ICONS = { open: '🔔', under_review: '🔍', resolved: '✅', escalated: '🚨' }
+// const STATUS_ICONS = { open: '🔔', under_review: '🔍', resolved: '✅', escalated: '🚨' }
 
 export default function AdminDisputesPage() {
   const [disputes, setDisputes]       = useState([])
@@ -84,14 +84,14 @@ export default function AdminDisputesPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {[
-          ['🚨', 'Escalated',    counts.escalated,    '#ff4d6d'],
-          ['🔔', 'Open',         counts.open,         '#f5a623'],
-          ['🔍', 'Under Review', counts.under_review, '#4f6ef7'],
-          ['✅', 'Resolved',     counts.resolved,     '#06d6a0'],
-        ].map(([icon, label, value, color]) => (
+          [ 'Escalated',    counts.escalated,    '#ff4d6d'],
+          [ 'Open',         counts.open,         '#f5a623'],
+          [ 'Under Review', counts.under_review, '#4f6ef7'],
+          [ 'Resolved',     counts.resolved,     '#06d6a0'],
+        ].map(([label, value, color]) => (
           <div key={label} className="bg-[#111527] border border-white/5 rounded-2xl p-4 cursor-pointer hover:border-white/10 transition-all"
             onClick={() => setFilter(label.toLowerCase().replace(' ', '_'))}>
-            <div className="text-2xl mb-1">{icon}</div>
+            {/* <div className="text-2xl mb-1">{icon}</div> */}
             <div className="font-syne font-bold text-2xl" style={{ color }}>{value}</div>
             <div className="text-[#7b82a8] text-sm">{label}</div>
           </div>
@@ -102,10 +102,10 @@ export default function AdminDisputesPage() {
       <div className="flex flex-wrap gap-2 mb-6">
         {[
           { key: 'all',         label: `All (${counts.all})` },
-          { key: 'escalated',   label: `🚨 Escalated (${counts.escalated})` },
-          { key: 'open',        label: `🔔 Open (${counts.open})` },
-          { key: 'under_review',label: `🔍 Under Review (${counts.under_review})` },
-          { key: 'resolved',    label: `✅ Resolved (${counts.resolved})` },
+          { key: 'escalated',   label: `Escalated (${counts.escalated})` },
+          { key: 'open',        label: `Open (${counts.open})` },
+          { key: 'under_review',label: `Under Review (${counts.under_review})` },
+          { key: 'resolved',    label: `Resolved (${counts.resolved})` },
         ].map(f => (
           <button key={f.key} onClick={() => setFilter(f.key)}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${filter === f.key ? 'bg-brand-500 text-white' : 'bg-[#111527] text-[#7b82a8] hover:text-white border border-white/5'}`}>
@@ -128,7 +128,7 @@ export default function AdminDisputesPage() {
                 className="w-full flex items-start justify-between p-5 text-left hover:bg-white/2 transition-colors">
                 <div className="flex-1 min-w-0 pr-4">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span>{STATUS_ICONS[d.status]}</span>
+                    
                     <h3 className="font-semibold text-white">{d.title}</h3>
                     <span className={`text-xs px-2 py-0.5 rounded-full border capitalize ${STATUS_COLORS[d.status]}`}>
                       {d.status.replace('_', ' ')}
